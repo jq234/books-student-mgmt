@@ -98,7 +98,10 @@ LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/login/"
 
 if not DEBUG:
-    CSRF_TRUSTED_ORIGINS = os.environ.get(
-        "CSRF_TRUSTED_ORIGINS", ""
-    ).split(",")
+    _csrf_origins = os.environ.get("CSRF_TRUSTED_ORIGINS", "")
+    if not _csrf_origins:
+        _csrf_origins = ",".join(
+            f"https://{host}" for host in ALLOWED_HOSTS if host != "*"
+        )
+    CSRF_TRUSTED_ORIGINS = [o.strip() for o in _csrf_origins.split(",") if o.strip()]
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
