@@ -1,0 +1,32 @@
+﻿{% extends "core/base.html" %}
+{% block title %}{{ action }}成绩{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>{% if action == "录入" %}➕{% else %}✏️{% endif %} {{ action }}成绩</h1>
+</div>
+<div class="card" style="max-width:500px;">
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="id_student">{{ form.student.label }}</label>
+            {{ form.student }}
+        </div>
+        <div class="form-group">
+            <label for="id_course">{{ form.course.label }}</label>
+            {{ form.course }}
+        </div>
+        <div class="form-group">
+            <label for="id_exam_type">{{ form.exam_type.label }}</label>
+            {{ form.exam_type }}
+        </div>
+        <div class="form-group">
+            <label for="id_score">{{ form.score.label }}</label>
+            {{ form.score }}
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">保存</button>
+            <a href="{% url 'grade_list' %}" class="btn btn-outline">取消</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

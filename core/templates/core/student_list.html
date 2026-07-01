@@ -1,0 +1,52 @@
+﻿{% extends "core/base.html" %}
+{% block title %}学生管理{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>👥 学生管理</h1>
+</div>
+
+<div class="filter-bar">
+    <form method="get" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+        <input type="text" name="search" placeholder="🔍 搜索学号 / 姓名..." value="{{ search }}" style="width:220px;">
+        <select name="class">
+            <option value="">全部班级</option>
+            {% for c in classes %}
+            <option value="{{ c.id }}" {% if class_filter == c.id|stringformat:"s" %}selected{% endif %}>{{ c.grade }} {{ c.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary btn-sm">筛选</button>
+        <a href="{% url 'student_list' %}" class="btn btn-outline btn-sm">重置</a>
+    </form>
+    <a href="{% url 'student_add' %}" class="btn btn-success">+ 添加学生</a>
+</div>
+
+<div class="card">
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>学号</th><th>姓名</th><th>性别</th><th>班级</th><th>手机号</th><th>入学日期</th><th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in students %}
+                <tr>
+                    <td>{{ s.student_no }}</td>
+                    <td>{{ s.user.first_name|default:"-" }}</td>
+                    <td>{{ s.gender }}</td>
+                    <td>{{ s.class_obj.grade }} {{ s.class_obj.name|default:"-" }}</td>
+                    <td>{{ s.user.phone|default:"-" }}</td>
+                    <td>{{ s.enrollment_date|default:"-" }}</td>
+                    <td>
+                        <a href="{% url 'student_edit' s.pk %}" class="btn btn-outline btn-sm">编辑</a>
+                        <a href="{% url 'student_delete' s.pk %}" class="btn btn-danger btn-sm" onclick="return confirm('确定删除该学生吗？')">删除</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" style="text-align:center;color:var(--gray-600);padding:40px;">暂无学生数据</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

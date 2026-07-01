@@ -1,0 +1,108 @@
+﻿{% extends "core/base.html" %}
+{% block title %}成绩统计{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>📈 班级成绩统计</h1>
+</div>
+
+<div class="filter-bar">
+    <form method="get" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+        <select name="class">
+            <option value="">请选择班级</option>
+            {% for c in classes %}
+            <option value="{{ c.id }}" {% if selected_class and selected_class.id == c.id %}selected{% endif %}>
+                {{ c.grade }} {{ c.name }}
+            </option>
+            {% endfor %}
+        </select>
+        <select name="course">
+            <option value="">请选择课程</option>
+            {% for c in courses %}
+            <option value="{{ c.id }}" {% if selected_course and selected_course.id == c.id %}selected{% endif %}>
+                {{ c.name }}
+            </option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary btn-sm">查询统计</button>
+    </form>
+</div>
+
+{% if class_stats %}
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value">{{ class_stats.avg|floatformat:1 }}</div>
+        <div class="stat-label">平均分</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ class_stats.max|floatformat:1 }}</div>
+        <div class="stat-label">最高分</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ class_stats.min|floatformat:1 }}</div>
+        <div class="stat-label">最低分</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ class_stats.count }}</div>
+        <div class="stat-label">成绩记录数</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">📊 分数段分布 - {{ selected_course.name }}</div>
+    {% for label, count in distribution.items %}
+    <div style="margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <span style="font-size:14px;">{{ label }}</span>
+            <span style="font-weight:600;">{{ count }} 人</span>
+        </div>
+        <div style="background:var(--gray-200);border-radius:6px;height:8px;overflow:hidden;">
+            <div style="background:var(--primary);height:100%;width:{% widthratio count class_stats.count 100 %}%;border-radius:6px;transition:width 0.3s;"></div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="card">
+    <div class="card-header">👥 学生成绩明细</div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>学号</th><th>姓名</th>
+                    {% if stats.0.grades %}
+                    {% for g in stats.0.grades %}
+                    <th>{{ g.exam_type }}</th>
+                    {% endfor %}
+                    {% endif %}
+                    <th>平均分</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in stats %}
+                <tr>
+                    <td>{{ row.student.student_no }}</td>
+                    <td>{{ row.student.user.first_name }}</td>
+                    {% for g in row.grades %}
+                    <td>
+                        <span class="{% if g.score >= 90 %}score-high{% elif g.score >= 60 %}score-mid{% else %}score-low{% endif %}">
+                            {{ g.score }}
+                        </span>
+                    </td>
+                    {% endfor %}
+                    <td><strong>{{ row.avg_score|floatformat:1 }}</strong></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="10" style="text-align:center;padding:40px;">暂无数据</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="card">
+    <p style="color:var(--gray-600);text-align:center;padding:40px;">
+        请选择班级和课程，点击「查询统计」查看成绩分析
+    </p>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,29 @@
+﻿{% extends "core/base.html" %}
+{% block title %}批量录入成绩{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>📋 批量录入成绩 - 选择条件</h1>
+</div>
+<div class="card" style="max-width:500px;">
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="id_course">{{ form.course.label }}</label>
+            {{ form.course }}
+        </div>
+        <div class="form-group">
+            <label for="id_exam_type">{{ form.exam_type.label }}</label>
+            {{ form.exam_type }}
+        </div>
+        <div class="form-group">
+            <label for="id_class_obj">{{ form.class_obj.label }}</label>
+            {{ form.class_obj }}
+            <small style="color:var(--gray-600);">不选则为全部班级</small>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">下一步</button>
+            <a href="{% url 'grade_list' %}" class="btn btn-outline">取消</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

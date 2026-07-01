@@ -1,0 +1,42 @@
+﻿{% extends "core/base.html" %}
+{% block title %}成绩查询{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>📊 成绩查询</h1>
+    {% if total_avg %}
+    <p>总平均分：<strong style="color:var(--primary);">{{ total_avg|floatformat:1 }}</strong></p>
+    {% endif %}
+</div>
+
+{% if grouped_grades %}
+    {% for course, grades in grouped_grades.items %}
+    <div class="card">
+        <div class="card-header">{{ course.name }} ({{ course.code }}) · {{ course.credit }} 学分</div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>考试类型</th><th>成绩</th><th>等级</th></tr>
+                </thead>
+                <tbody>
+                    {% for g in grades %}
+                    <tr>
+                        <td>{{ g.get_exam_type_display }}</td>
+                        <td>
+                            <span class="{% if g.score >= 90 %}score-high{% elif g.score >= 60 %}score-mid{% else %}score-low{% endif %}">
+                                {{ g.score }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if g.score >= 90 %}优秀{% elif g.score >= 80 %}良好{% elif g.score >= 70 %}中等{% elif g.score >= 60 %}及格{% else %}不及格{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="card"><p style="color:var(--gray-600);">暂无成绩记录</p></div>
+{% endif %}
+{% endblock %}

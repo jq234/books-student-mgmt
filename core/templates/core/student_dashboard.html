@@ -1,0 +1,61 @@
+﻿{% extends "core/base.html" %}
+{% block title %}学生首页{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>🎓 欢迎，{{ student.user.first_name|default:student.user.username }}</h1>
+    <p>学号：{{ student.student_no }} | 班级：{{ student.class_obj.name|default:"未分配" }}</p>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value">{{ total_courses }}</div>
+        <div class="stat-label">修读课程数</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ total_grades }}</div>
+        <div class="stat-label">成绩记录数</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{% if avg_score %}{{ avg_score|floatformat:1 }}{% else %}-{% endif %}</div>
+        <div class="stat-label">平均分</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">📊 各科成绩概览</div>
+    {% if course_grades %}
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>课程</th>
+                    <th>学分</th>
+                    <th>考试类型</th>
+                    <th>成绩</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for course, grades in course_grades.items %}
+                    {% for g in grades %}
+                    <tr>
+                        {% if forloop.first %}
+                        <td rowspan="{{ grades|length }}"><strong>{{ course.name }}</strong></td>
+                        <td rowspan="{{ grades|length }}">{{ course.credit }}</td>
+                        {% endif %}
+                        <td>{{ g.get_exam_type_display }}</td>
+                        <td>
+                            <span class="{% if g.score >= 90 %}score-high{% elif g.score >= 60 %}score-mid{% else %}score-low{% endif %}">
+                                {{ g.score }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p style="color: var(--gray-600);">暂无成绩记录</p>
+    {% endif %}
+</div>
+{% endblock %}

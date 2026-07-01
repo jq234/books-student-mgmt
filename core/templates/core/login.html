@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 学生信息管理系统</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="login-page">
+        <div class="login-card">
+            <h2>📚 学生信息管理系统</h2>
+            <p class="subtitle">请使用您的账号登录</p>
+            {% if messages %}
+            <div class="messages">
+                {% for msg in messages %}
+                <div class="alert alert-{{ msg.tags }}">{{ msg }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="id_username">用户名</label>
+                    {{ form.username }}
+                </div>
+                <div class="form-group">
+                    <label for="id_password">密码</label>
+                    {{ form.password }}
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%;">登 录</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
