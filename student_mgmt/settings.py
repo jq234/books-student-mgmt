@@ -87,7 +87,7 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 
 STORAGES = {
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
 
@@ -97,11 +97,13 @@ LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/login/"
 
-if not DEBUG:
-    _csrf_origins = os.environ.get("CSRF_TRUSTED_ORIGINS", "")
-    if not _csrf_origins:
-        _csrf_origins = ",".join(
-            f"https://{host}" for host in ALLOWED_HOSTS if host != "*"
-        )
-    CSRF_TRUSTED_ORIGINS = [o.strip() for o in _csrf_origins.split(",") if o.strip()]
-    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+# Railway 运行在 HTTPS 代理之后
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# CSRF trusted origins
+_csrf_env = os.environ.get("CSRF_TRUSTED_ORIGINS", "")
+if _csrf_env:
+    CSRF_TRUSTED_ORIGINS = [o.strip() for o in _csrf_env.split(",") if o.strip()]
+elif not DEBUG:
+    _hosts = ALLOWED_HOSTS if ALLOWED_HOSTS != ["*"] else []
+    CSRF_TRUSTED_ORIGINS = [f"https://{h}" for h in _hosts if h]
